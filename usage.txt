@@ -1,0 +1,8 @@
+Software for calculating iES and Rsb statistics.
+following Tang, Thornton & Stoneking, PloS Biology 2007.
+verion 20190131
+
+Usage:
+Tang_stats [Plink filename] [number of rows] [number of cols] [theshold value] [seed] [number pops] [col pop1] [col pop2] ... [col pop N]
+
+Otput file is automatically generated with the input filename plus '_Results_Tang.txt'
