@@ -1,2 +1,3 @@
-Mb	data_stats...col_RsbN...k.
-0.087801	-8.357368
+bp	data_stats...col_RsbN...k.
+86483	6.741825
+86489	6.741825

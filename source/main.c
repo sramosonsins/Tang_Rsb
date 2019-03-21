@@ -62,7 +62,7 @@ int main(int arg, const char *argv[])
     
     //define variables and arrays:
     geno_rows = L = atol(argv[2]);
-    geno_cols = N = atoi(argv[3]) - 2;
+    geno_cols = N = atoi(argv[3])/* - 2*/;
     thresh = atof(argv[4]);
     init_seed1(atol(argv[5]));
     npops = atoi(argv[6]);
@@ -148,7 +148,7 @@ int main(int arg, const char *argv[])
     }
     
     //calculation Rsb, mean and sd:
-    printf("\nComputing Rsb...");
+    printf("\nComputing lnRsb...");
     for(i=0;i<L;i++) {
         l=0;
         for(j=0;j<npops-1;j++) {
@@ -191,12 +191,12 @@ int main(int arg, const char *argv[])
     for(j=0;j<npops;j++) fprintf(plink_file,"log(iES_POP%d)\t",j+1);
     for(j=0;j<npops;j++) {
         for(k=j+1;k<npops-1;k++) {
-            fprintf(plink_file,"Rsb(POP%d/POP%d)\t",j+1,k+1);
+            fprintf(plink_file,"lnRsb(POP%d/POP%d)\t",j+1,k+1);
         }
     }
     for(j=0;j<npops-1;j++) {
         for(k=j+1;k<npops;k++) {
-            fprintf(plink_file,"RsbN(POP%d/POP%d)\t",j+1,k+1);
+            fprintf(plink_file,"lnRsbN(POP%d/POP%d)\t",j+1,k+1);
         }
     }
     fprintf(plink_file,"\n");

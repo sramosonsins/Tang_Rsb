@@ -13,7 +13,7 @@
 
 #define TANG_SOFTW  "\nSoftware for calculating iES and Rsb statistics." \
 "\nfollowing Tang, Thornton & Stoneking, PloS Biology 2007." \
-"\nverion 20190131"
+"\nverion 20190321"
 
 #include <stdio.h>
 #include <stdlib.h>
