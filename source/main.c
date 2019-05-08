@@ -47,7 +47,7 @@ int main(int arg, const char *argv[])
     }
     
     printf(TANG_SOFTW);
-     printf("\n\nTang_stats ");
+    printf("\n\nTang_stats ");
     while(argc < arg) {
         printf("%s ",argv[argc]);
         argc++;
@@ -88,7 +88,7 @@ int main(int arg, const char *argv[])
 
     //read input data: skip header
     printf("\nReading input file...");
-    while((c=getc(plink_file))!='\n' && c!='\r');
+    while((c=getc(plink_file))!='\n' && c!='\r'); //skip header
     row = 0;
     for(row=0;row<L;row++) {
         if((c = read_row(plink_file,chr_name,lox,geno,geno_cols,row))==0) {
@@ -283,7 +283,7 @@ void usage()
 {
     printf(TANG_SOFTW);
     printf("\n\nUsage:");
-    printf("\nTang_stats [Plink filename] [number of rows] [number of cols] [theshold value] [seed] [number pops] [col pop1] [col pop2] ... [col pop N]");
+    printf("\nTang_stats [Plink filename] [number of rows] [number of individuals] [threshold value] [seed] [number pops] [col pop1] [col pop2] ... [col pop N]");
     printf("\n\nOtput file is automatically generated with the input filename plus '_Results_Tang.txt'");
     printf("\n\n");
 }
