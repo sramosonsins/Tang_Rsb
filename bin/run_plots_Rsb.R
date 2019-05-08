@@ -4,7 +4,7 @@ args = commandArgs(trailingOnly=TRUE)
 
 require(data.table)
 if (length(args) < 4 ){
-  system("echo Error: Arguments are: [filename] [times difference between pops] [number of pops] {name pop1} ... [name pop n]")
+  system("echo Error: Arguments are: [filename] [times difference between pops] [number of pops] [name pop1] ... [name pop n]")
   #filename <- "../example/Window_1.txt_Results_Tang.txt"
   #npops <- 6
   #times.diff <- log(100)

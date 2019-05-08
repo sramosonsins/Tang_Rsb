@@ -3,9 +3,7 @@
 //  Tang_functions
 //
 //  Created by Sebastian Ramos-Onsins on 29/01/2019.
-//  From an original R script of Eva KF Chan
-//  Function to calculate the Rsb statistic for a given chromosome as described in:
-//  Tang K, Thornton KR, Stoneking M (2007) A New Approach for Using Genome Scans to Detect Recent Positive Selection in the Human Genome . PLoS Biol 5(7): e171 doi:10.1371/journal.pbio.0050171
+//  Copyright © 2019 Sebastian Ramos-Onsins. All rights reserved.
 //
 
 #include "main.h"
@@ -22,16 +20,19 @@ int main(int arg, const char *argv[])
     double **all_iES;
     long int L;
     int N;
-    long int i;
+    long int i,h;
     int j,k,l;
     int npops;
     int *popsize;
     int popcum;
     
     double *mean;
+    double *median;
+    double *med;
     double *sd;
     double **all_Rsb;
     long int *nit;
+    char **pop_name;
 
     FILE *plink_file = 0;
     int c;
@@ -47,7 +48,7 @@ int main(int arg, const char *argv[])
     }
     
     printf(TANG_SOFTW);
-    printf("\n\nTang_stats ");
+     printf("\n\nTang_stats ");
     while(argc < arg) {
         printf("%s ",argv[argc]);
         argc++;
@@ -62,16 +63,21 @@ int main(int arg, const char *argv[])
     
     //define variables and arrays:
     geno_rows = L = atol(argv[2]);
-    geno_cols = N = atoi(argv[3])/* - 2*/;
+    geno_cols = N = atoi(argv[3]);
     thresh = atof(argv[4]);
     init_seed1(atol(argv[5]));
     npops = atoi(argv[6]);
     popsize = (int *)calloc(npops,sizeof(int));
     for(i=0;i<npops;i++) {
         if(i!=npops-1) popsize[i] = atoi(argv[7+i+1]) - atoi(argv[7+i]);
-        else popsize[i] = (N+2) - atoi(argv[7+i]);
+        else popsize[i] = (N+2+1) - atoi(argv[7+i]);
     }
-    
+    pop_name = (char **)calloc(npops,sizeof(char *));
+    for(i=0;i<npops;i++) {
+        pop_name[i] = (char *)calloc(100,sizeof(char));
+        strcpy( pop_name[i] , argv[7+npops+i]);
+    }
+
     //geno is transposed to facilitate the analysis
     geno = (int **)calloc(N,sizeof(int *));
     for(j=0;j<N;j++) {geno[j] = (int *)calloc(L,sizeof(int));}
@@ -80,6 +86,7 @@ int main(int arg, const char *argv[])
     for(i=0;i<npops;i++) {all_iES[i] = (double *)calloc(L,sizeof(double));}
     
     mean = (double *)calloc(npops*(npops-1)/2,sizeof(double));
+    median = (double *)calloc(npops*(npops-1)/2,sizeof(double));
     sd = (double *)calloc(npops*(npops-1)/2,sizeof(double));
     nit = (long int *)calloc(npops*(npops-1)/2,sizeof(long int));
 
@@ -88,11 +95,11 @@ int main(int arg, const char *argv[])
 
     //read input data: skip header
     printf("\nReading input file...");
-    while((c=getc(plink_file))!='\n' && c!='\r'); //skip header
+    while((c=getc(plink_file))!='\n' && c!='\r');
     row = 0;
     for(row=0;row<L;row++) {
         if((c = read_row(plink_file,chr_name,lox,geno,geno_cols,row))==0) {
-            printf("\nError: input file having less rows than defined. nrows: %ld\n",row+1);
+            printf("\nError: input file having less rows or more cols than defined. nrows: %ld\n",row+1);
             exit(1);
         }
     }
@@ -112,18 +119,18 @@ int main(int arg, const char *argv[])
         printf("Error reading the input file %s\n",argv[1]);
         exit(1);
     }
-    fprintf(plink_file,"CHR\tPOS\t");
+    fprintf(plink_file,"CHR\tPOS");
     for(j=0;j<npops;j++) {
         for(k=0;k<popsize[j];k++) {
-            fprintf(plink_file,"POP%d_IND%d\t",j+1,k+1);
+            fprintf(plink_file,"\t%s%d_IND%d",pop_name[j],j+1,k+1);
         }
     }
     fprintf(plink_file,"\n");
         //genotypes
     for(i=0;i<L;i++) {
-        fprintf(plink_file,"%s\t%f\t",chr_name,lox[i]);
+        fprintf(plink_file,"%s\t%f",chr_name,lox[i]);
         for(j=0;j<N;j++) {
-            fprintf(plink_file,"%d\t",geno[j][i]);
+            fprintf(plink_file,"\t%d",geno[j][i]);
         }
         fprintf(plink_file,"\n");
     }
@@ -131,7 +138,7 @@ int main(int arg, const char *argv[])
     
     //converting 2 homozygotes to 0:
     printf("\nConverting all homozygotes to value 0...");
-    for(j=0;j<npops;j++) {
+    for(j=0;j<N;j++) {
         for(i=0;i<L;i++) {
             if(geno[j][i]==2) geno[j][i]=0;
         }
@@ -147,8 +154,8 @@ int main(int arg, const char *argv[])
         popcum += popsize[j];
     }
     
-    //calculation Rsb, mean and sd:
-    printf("\nComputing lnRsb...");
+    //calculation Rsb, median, mean and sd:
+    printf("\nComputing Rsb...");
     for(i=0;i<L;i++) {
         l=0;
         for(j=0;j<npops-1;j++) {
@@ -158,7 +165,7 @@ int main(int arg, const char *argv[])
                     mean[l] = mean[l] + all_Rsb[l][i];
                     sd[l] = sd[l] + all_Rsb[l][i] * all_Rsb[l][i];
                     nit[l] += 1;
-                }
+                 }
                 else {
                     all_Rsb[l][i] = 1234567890;
                 }
@@ -166,11 +173,32 @@ int main(int arg, const char *argv[])
             }
         }
     }
+    // median ...
+    l=0;
+    med = (double *)calloc(L,sizeof(double));
+    for(j=0;j<npops-1;j++) {
+        for(k=j+1;k<npops;k++) {
+            h = 0;
+            for(i=0;i<L;i++) {
+                if(all_Rsb[l][i] != 1234567890) {
+                    med[h++] = all_Rsb[l][i];
+                }
+            }
+            qsort(med,nit[l],sizeof(double),compare_);
+            if((double)nit[l]/2.0 == nit[l]/2.0) {
+                median[l] = (med[(long int)((double)nit[l]/2.0 - 1.0)] +
+                             med[(long int)((double)nit[l]/2.0)]) / 2.0;
+            }
+            else median[l] = med[nit[l]/2];
+            l++;
+        }
+    }
+    // mean, sd ...
     l=0;
     for(j=0;j<npops-1;j++) {
         for(k=j+1;k<npops;k++) {
             mean[l] = mean[l]/(double)nit[l];
-            sd[l] = sqrt(sd[l]/(double)nit[l] - mean[l]*mean[l]);
+            sd[l] = sqrt(sd[l]/((double)nit[l]-1.0) - mean[l]*mean[l] * (double)nit[l]/((double)nit[l]-1.0)); //smapled sd
             l++;
         }
     }
@@ -187,16 +215,16 @@ int main(int arg, const char *argv[])
     }
         //header
     fprintf(plink_file,"Position\t");
-    for(j=0;j<npops;j++) fprintf(plink_file,"iES_POP%d\t",j+1);
-    for(j=0;j<npops;j++) fprintf(plink_file,"log(iES_POP%d)\t",j+1);
-    for(j=0;j<npops;j++) {
-        for(k=j+1;k<npops-1;k++) {
-            fprintf(plink_file,"lnRsb(POP%d/POP%d)\t",j+1,k+1);
+    for(j=0;j<npops;j++) fprintf(plink_file,"iES_%s\t",pop_name[j]);
+    for(j=0;j<npops;j++) fprintf(plink_file,"log(iES_%s)\t",pop_name[j]);
+    for(j=0;j<npops-1;j++) {
+        for(k=j+1;k<npops;k++) {
+            fprintf(plink_file,"Rsb(%s/%s)\t",pop_name[j],pop_name[k]);
         }
     }
     for(j=0;j<npops-1;j++) {
         for(k=j+1;k<npops;k++) {
-            fprintf(plink_file,"lnRsbN(POP%d/POP%d)\t",j+1,k+1);
+            fprintf(plink_file,"RsbN(%s/%s)\t",pop_name[j],pop_name[k]);
         }
     }
     fprintf(plink_file,"\n");
@@ -223,7 +251,7 @@ int main(int arg, const char *argv[])
         l=0;
         for(j=0;j<npops-1;j++) {
             for(k=j+1;k<npops;k++) {
-                if(all_Rsb[l][i] != 1234567890) fprintf(plink_file,"%f\t",(all_Rsb[l][i]-mean[l])/sd[l]);
+                if(all_Rsb[l][i] != 1234567890) fprintf(plink_file,"%f\t",(all_Rsb[l][i]-median[l])/sd[l]);
                 else fprintf(plink_file,"NA\t");
                 l++;
             }
@@ -277,6 +305,14 @@ int read_row(FILE *plink_file, char *chr_name, double *lox, int **geno, int geno
     if(ch == EOF)
         return(0);
     return(1);
+}
+
+/*compare two double numbers in a long int list*/
+int compare_(const void *i,const void *j)
+{
+    if(*(double *)i < *(double *)j) return -1;
+    if(*(double *)i > *(double *)j) return  1;
+    return 0;
 }
 
 void usage()

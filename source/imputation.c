@@ -63,12 +63,12 @@ void impute_genotypes(int **geno, long int *geno_rows, int geno_cols)
             gj0[0] += (geno[j][i]==0);
             gj0[1] += (geno[j][i]==1);
             gj0[2] += (geno[j][i]==2);
-       }
+        }
         pjt = geno_cols - k;
         if(i==0) {gj[0]=gj[1]=gj[2]=1;}
-        prob_pj[0] = gj[0]*pj[0][0] + gj[1]*pj[0][1] + gj[2]*pj[0][2];
-        prob_pj[1] = gj[0]*pj[1][0] + gj[1]*pj[1][1] + gj[2]*pj[1][2];
-        prob_pj[2] = gj[0]*pj[2][0] + gj[1]*pj[2][1] + gj[2]*pj[2][2];
+        prob_pj[0] = gj[0]*pj[0][0] + gj[1]*pj[1][0] + gj[2]*pj[2][0];
+        prob_pj[1] = gj[0]*pj[0][1] + gj[1]*pj[1][1] + gj[2]*pj[2][1];
+        prob_pj[2] = gj[0]*pj[0][2] + gj[1]*pj[1][2] + gj[2]*pj[2][2];
         prob_pjt = prob_pj[0] + prob_pj[1] + prob_pj[2];
         
         //assign genotypes
