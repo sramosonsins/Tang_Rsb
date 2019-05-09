@@ -65,9 +65,16 @@ void impute_genotypes(int **geno, long int *geno_rows, int geno_cols)
         else {
             ran_val = ran1();
             for(j=0;j<k;j++) {
-                prob_pj[0] = pj[geno[k][i1]][0];
-                prob_pj[1] = pj[geno[k][i1]][1];
-                prob_pj[2] = pj[geno[k][i1]][2];
+                if(geno[k][i1] == 9) {
+                    prob_pj[0] = pj[0][0] + pj[1][0] + pj[2][0];
+                    prob_pj[1] = pj[0][1] + pj[1][1] + pj[2][1];
+                    prob_pj[2] = pj[0][2] + pj[1][2] + pj[2][2];
+                }
+                else {
+                    prob_pj[0] = pj[geno[k][i1]][0];
+                    prob_pj[1] = pj[geno[k][i1]][1];
+                    prob_pj[2] = pj[geno[k][i1]][2];
+                }
                 prob_pjt = prob_pj[0] + prob_pj[1] + prob_pj[2];
                 if((double)prob_pj[0]/(double)prob_pjt > ran_val) {
                     geno[is_na[j]][i] = 0;
