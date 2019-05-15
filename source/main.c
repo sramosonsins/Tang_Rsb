@@ -261,6 +261,7 @@ int main(int arg, const char *argv[])
     fclose(plink_file);
     
     printf("\ndone\n");
+    exit(0);
 }
 
 int read_row(FILE *plink_file, char *chr_name, double *lox, int **geno, int geno_cols, long int row)

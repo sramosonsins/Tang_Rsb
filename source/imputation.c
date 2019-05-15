@@ -9,7 +9,7 @@
 void impute_genotypes(int **geno, long int *geno_rows, int geno_cols)
 {
     int pj[3][3];
-    int pjt;
+    //int pjt;
     double prob_pj[3];
     double prob_pjt;
     long int i,i1;
@@ -55,7 +55,7 @@ void impute_genotypes(int **geno, long int *geno_rows, int geno_cols)
             if(geno[j][i]==9) is_na[k++] = j;
             //the real frequency at position i
         }
-        pjt = geno_cols - k;
+        //pjt = geno_cols - k;
         
         //assign genotypes
         if(pj[0][0] + pj[0][1] + pj[0][2] + pj[1][0] + pj[1][1] + pj[1][2] + pj[2][0] + pj[2][1] + pj[2][2] == 0) {
