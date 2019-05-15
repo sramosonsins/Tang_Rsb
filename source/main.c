@@ -99,24 +99,24 @@ int main(int arg, const char *argv[])
     row = 0;
     for(row=0;row<L;row++) {
         if((c = read_row(plink_file,chr_name,lox,geno,geno_cols,row))==0) {
-            printf("\nError: input file having less rows or more cols than defined. nrows: %ld\n",row+1);
+            printf("\nError: input file has less rows or more cols than defined. nrows: %ld\n",row+1);
             exit(1);
         }
     }
     fclose(plink_file);
     
     //imputation
-    printf("\nimputing missing values (previously assigned as genotype=9)...");
+    printf("\nimputing missing values (previously assigned as genotype=9)...\n");
     impute_genotypes(geno, &geno_rows, geno_cols);
     L = geno_rows;
 
     //writing imputed file
     strcat(file_out,argv[1]);
     strcat(file_out,"_imputed.txt\0");
-    printf("\nWriting imputed genotype file %s...",file_out);
+    printf("\nWriting imputed genotype file %s...\n",file_out);
         //header
     if (!(plink_file = fopen(file_out,"w"))) {
-        printf("Error reading the input file %s\n",argv[1]);
+        printf("Error writing the imputed file %s\n",argv[1]);
         exit(1);
     }
     fprintf(plink_file,"CHR\tPOS");
