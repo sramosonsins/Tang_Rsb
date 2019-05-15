@@ -1,4 +1,5 @@
 #run example:
+set -x
 
 cd ./source
 gcc *.c -lm -o ../bin/Tang_stats -O3 -Wall
