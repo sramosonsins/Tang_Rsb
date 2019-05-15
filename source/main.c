@@ -39,6 +39,7 @@ int main(int arg, const char *argv[])
     long int row;
     char chr_name[11]; //the file must contain the same ID for all positions!
     char file_out[1024];
+    char file_in[1024];
     int argc = 1;
 
     if(arg < 8) {
@@ -55,13 +56,8 @@ int main(int arg, const char *argv[])
     }
     printf("\n");
     
-    
-    if (!(plink_file = fopen(argv[1],"r"))) {
-        printf("Error reading the input file %s\n",argv[1]);
-        exit(1);
-    }
-    
     //define variables and arrays:
+    strcpy( file_in, argv[1]);
     geno_rows = L = atol(argv[2]);
     geno_cols = N = atoi(argv[3]);
     thresh = atof(argv[4]);
@@ -78,6 +74,11 @@ int main(int arg, const char *argv[])
         strcpy( pop_name[i] , argv[7+npops+i]);
     }
 
+    if (!(plink_file = fopen(file_in,"r"))) {
+        printf("Error reading the input file %s\n",file_in);
+        exit(1);
+    }
+    
     //geno is transposed to facilitate the analysis
     geno = (int **)calloc(N,sizeof(int *));
     for(j=0;j<N;j++) {geno[j] = (int *)calloc(L,sizeof(int));}
@@ -111,12 +112,12 @@ int main(int arg, const char *argv[])
     L = geno_rows;
 
     //writing imputed file
-    strcat(file_out,argv[1]);
+    strcat(file_out,file_in);
     strcat(file_out,"_imputed.txt\0");
     printf("\nWriting imputed genotype file %s...\n",file_out);
         //header
     if (!(plink_file = fopen(file_out,"w"))) {
-        printf("Error writing the imputed file %s\n",argv[1]);
+        printf("Error writing the imputed file %s\n",file_in);
         exit(1);
     }
     fprintf(plink_file,"CHR\tPOS");
@@ -205,7 +206,7 @@ int main(int arg, const char *argv[])
     
     //writing output file
     file_out[0] = '\0';
-    strcat(file_out,argv[1]);
+    strcat(file_out,file_in);
     strcat(file_out,"_Results_Tang.txt\0");
     printf("\nWriting results in the output file %s...",file_out);
 
