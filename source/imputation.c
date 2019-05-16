@@ -6,7 +6,7 @@
 //
 #include "ran1.h"
 
-void impute_genotypes(int **geno, long int *geno_rows, int geno_cols)
+void impute_genotypes(int **geno, long int geno_rows, int geno_cols)
 {
     int pj[3][3];
     //int pjt;
@@ -19,7 +19,7 @@ void impute_genotypes(int **geno, long int *geno_rows, int geno_cols)
     
     is_na = (int *)calloc(geno_cols,sizeof(int));
     
-    for(i=0;i<*geno_rows;i++) {
+    for(i=0;i<geno_rows;i++) {
         //check if there are missing values in this position
         m = 0;
         for(j=0;j<geno_cols;j++) {

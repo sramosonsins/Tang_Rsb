@@ -35,6 +35,8 @@ int main(int arg, const char *argv[])
     char **pop_name;
 
     FILE *plink_file = 0;
+    FILE *genot_file = 0;
+    FILE *results_file = 0;
     int c;
     long int row;
     char chr_name[11]; //the file must contain the same ID for all positions!
@@ -49,7 +51,7 @@ int main(int arg, const char *argv[])
     }
     
     printf(TANG_SOFTW);
-     printf("\n\nTang_stats ");
+    printf("\n\nTang_stats ");
     while(argc < arg) {
         printf("%s ",argv[argc]);
         argc++;
@@ -108,34 +110,34 @@ int main(int arg, const char *argv[])
     
     //imputation
     printf("\nimputing missing values (previously assigned as genotype=9)...\n");
-    impute_genotypes(geno, &geno_rows, geno_cols);
-    L = geno_rows;
+    impute_genotypes(geno, L, geno_cols);
 
     //writing imputed file
+    memset(file_out, '\0', 1024);
     strcat(file_out,file_in);
     strcat(file_out,"_imputed.txt\0");
     printf("\nWriting imputed genotype file %s...\n",file_out);
         //header
-    if (!(plink_file = fopen(file_out,"w"))) {
+    if (!(genot_file = fopen(file_out,"w"))) {
         printf("Error writing the imputed file %s\n",file_in);
         exit(1);
     }
-    fprintf(plink_file,"CHR\tPOS");
+    fprintf(genot_file,"CHR\tPOS");
     for(j=0;j<npops;j++) {
         for(k=0;k<popsize[j];k++) {
-            fprintf(plink_file,"\t%s%d_IND%d",pop_name[j],j+1,k+1);
+            fprintf(genot_file,"\t%s%d_IND%d",pop_name[j],j+1,k+1);
         }
     }
-    fprintf(plink_file,"\n");
+    fprintf(genot_file,"\n");
         //genotypes
     for(i=0;i<L;i++) {
-        fprintf(plink_file,"%s\t%f",chr_name,lox[i]);
+        fprintf(genot_file,"%s\t%f",chr_name,lox[i]);
         for(j=0;j<N;j++) {
-            fprintf(plink_file,"\t%d",geno[j][i]);
+            fprintf(genot_file,"\t%d",geno[j][i]);
         }
-        fprintf(plink_file,"\n");
+        fprintf(genot_file,"\n");
     }
-    fclose(plink_file);
+    fclose(genot_file);
     
     //converting 2 homozygotes to 0:
     printf("\nConverting all homozygotes to value 0...");
@@ -210,56 +212,56 @@ int main(int arg, const char *argv[])
     strcat(file_out,"_Results_Tang.txt\0");
     printf("\nWriting results in the output file %s...",file_out);
 
-    if (!(plink_file = fopen(file_out,"w"))) {
+    if (!(results_file = fopen(file_out,"w"))) {
         printf("Error writing the input file %s\n",file_out);
         exit(1);
     }
-        //header
-    fprintf(plink_file,"Position\t");
-    for(j=0;j<npops;j++) fprintf(plink_file,"iES_%s\t",pop_name[j]);
-    for(j=0;j<npops;j++) fprintf(plink_file,"log(iES_%s)\t",pop_name[j]);
+    //header
+    fprintf(results_file,"Position\t");
+    for(j=0;j<npops;j++) fprintf(results_file,"iES_%s\t",pop_name[j]);
+    for(j=0;j<npops;j++) fprintf(results_file,"log(iES_%s)\t",pop_name[j]);
     for(j=0;j<npops-1;j++) {
         for(k=j+1;k<npops;k++) {
-            fprintf(plink_file,"Rsb(%s/%s)\t",pop_name[j],pop_name[k]);
+            fprintf(results_file,"Rsb(%s/%s)\t",pop_name[j],pop_name[k]);
         }
     }
     for(j=0;j<npops-1;j++) {
         for(k=j+1;k<npops;k++) {
-            fprintf(plink_file,"RsbN(%s/%s)\t",pop_name[j],pop_name[k]);
+            fprintf(results_file,"RsbN(%s/%s)\t",pop_name[j],pop_name[k]);
         }
     }
-    fprintf(plink_file,"\n");
-        //data
+    fprintf(results_file,"\n");
+    //data
     for(i=0;i<L;i++) {
-        fprintf(plink_file,"%f\t",lox[i]);
+        fprintf(results_file,"%f\t",lox[i]);
         for(j=0;j<npops;j++) {
-            if(all_iES[j][i] > 0.0) fprintf(plink_file,"%f\t",all_iES[j][i]);
-            else fprintf(plink_file,"NA\t");
+            if(all_iES[j][i] > 0.0) fprintf(results_file,"%f\t",all_iES[j][i]);
+            else fprintf(results_file,"NA\t");
         }
         for(j=0;j<npops;j++) {
-            if(all_iES[j][i] > 0.0) fprintf(plink_file,"%f\t",log(all_iES[j][i]));
-            else fprintf(plink_file,"NA\t");
+            if(all_iES[j][i] > 0.0) fprintf(results_file,"%f\t",log(all_iES[j][i]));
+            else fprintf(results_file,"NA\t");
         }
 
         l=0;
         for(j=0;j<npops-1;j++) {
             for(k=j+1;k<npops;k++) {
-                if(all_Rsb[l][i] != 1234567890) fprintf(plink_file,"%f\t",all_Rsb[l][i]);
-                else fprintf(plink_file,"NA\t");
+                if(all_Rsb[l][i] != 1234567890) fprintf(results_file,"%f\t",all_Rsb[l][i]);
+                else fprintf(results_file,"NA\t");
                 l++;
             }
         }
         l=0;
         for(j=0;j<npops-1;j++) {
             for(k=j+1;k<npops;k++) {
-                if(all_Rsb[l][i] != 1234567890) fprintf(plink_file,"%f\t",(all_Rsb[l][i]-median[l])/sd[l]);
-                else fprintf(plink_file,"NA\t");
+                if(all_Rsb[l][i] != 1234567890) fprintf(results_file,"%f\t",(all_Rsb[l][i]-median[l])/sd[l]);
+                else fprintf(results_file,"NA\t");
                 l++;
             }
         }
-        fprintf(plink_file,"\n");
+        fprintf(results_file,"\n");
     }
-    fclose(plink_file);
+    fclose(results_file);
     
     printf("\ndone\n");
     exit(0);
@@ -273,6 +275,7 @@ int read_row(FILE *plink_file, char *chr_name, double *lox, int **geno, int geno
     char field[100];
     
     for(i=0;i<11;i++) {chr_name[i]='\0';}
+    for(i=0;i<100;i++) {field[i]='\0';}
     ncol = 0; nfield = 0;
     while((ch = fgetc(plink_file)) != '\n' && ch != EOF && ch != '\r') {
         if(ch != 9 && ch != 32) {

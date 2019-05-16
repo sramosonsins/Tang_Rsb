@@ -44,24 +44,6 @@ void calc_iES_slow(int **geno, double *lox, long int *geno_rows, int *geno_cols,
     return;
 }
 
-/*
-calc_iES.slow <- function(geno,lox) {#function(EHH,lox)
-    if( nrow(geno) != length(lox) ) { stop("Number of positions given does not agree with number of markers.\n") }
- 
-    L <- length(lox)
-    iES <- rep(NA, L)
-    x = lox[2:L] - lox[1:(L-1)]
-    
-    for(i in 1:L) {
-        EHHSa <- calc_EHHS.pos(i,geno)
-        y = EHHSa[1:(L-1)] + EHHSa[2:L]
-        if( !all(is.na(y)) ) {
-            iES[i] = sum(y*x, na.rm=T) / 2
-        }; rm(y)
-    }
-    iES
-}
-*/
 void calc_EHHS_pos(long int *i, int **geno, long int *geno_rows, int *geno_cols, double *thresh, long int *min, long int *max, double *EHH)
 {
     long int M;
@@ -127,38 +109,4 @@ void calc_EHHS_pos(long int *i, int **geno, long int *geno_rows, int *geno_cols,
     
     return;
 }
-/*
-calc_EHHS.pos <- function(pos,geno,thresh=0.1) {
-    M <- nrow(geno)
-    EHH <- rep(NA,M)
-    i <- pos
- 
-    Ii <- sum(geno[i,]==0)
-    EHH[i] = 1
-    
-    ## left-flank
-    j = i-1
-    while( j >= 1 ) {
-        Ij <- sum(colSums(geno[j:i,])==0)
-        cur.EHH = Ij/Ii
-        if (is.na(cur.EHH) | cur.EHH < thresh) { break } else {
-            EHH[j] <- cur.EHH
-        }
-        j = j-1
-    }
-    
-    ## right-flank
-    j = i + 1
-    while( j <= M ) {
-        Ij <- sum(colSums(geno[i:j,])==0)
-        cur.EHH = Ij/Ii
-        if (is.na(cur.EHH) | cur.EHH < thresh) { break } else {
-            EHH[j] <- cur.EHH
-        }
-        j = j+1
-    }
-    return(EHH)
-}
-
-*/
 

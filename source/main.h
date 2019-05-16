@@ -10,7 +10,7 @@
 
 #define TANG_SOFTW  "\nSoftware for calculating iES and Rsb statistics." \
 "\nfollowing Tang, Thornton & Stoneking, PloS Biology 2007." \
-"\nverion 20190509"
+"\nverion 20190515"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -21,7 +21,7 @@
 
 int read_row(FILE *plink_file,char *chr_name, double *lox, int **geno, int geno_cols, long int row);
 
-void impute_genotypes(int **geno, long int *geno_rows, int geno_cols);
+void impute_genotypes(int **geno, long int geno_rows, int geno_cols);
 
 void usage(void);
 
