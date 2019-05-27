@@ -1,7 +1,9 @@
 Software for calculating iES and Rsb statistics following Tang, Thornton & Stoneking, PloS Biology 2007.
-by Sebastian E. Ramos-Onsins, version 20190131
+by Sebastian E. Ramos-Onsins
 
 Usage:
 Tang_stats [Plink_pedigree_modified filename] [number of rows] [number of cols] [threshold value] [seed] [number pops] [col pop1] [col pop2] ... [col pop N]
 
 Otput file is automatically generated with the input filename plus '_Results_Tang.txt'
+
+Note: The analysis uses unphased data. That is, the results obtained using the unphosed data are based on the observed homozygosity per individual. The results can be very different that using haplotypes (phased data), which uses the expected homozygosity assuming panmixia (you can uses the R library "rehh" to perform analysis with phased data).
