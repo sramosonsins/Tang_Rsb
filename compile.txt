@@ -1,4 +1,4 @@
 #To compile:
 #enter into the source folder and type:
 
-gcc *.c -lm -o Tang_stats -O· -Wall
+gcc ./source/*.c -lm -o ./bin/Tang_stats -O3 -Wall
