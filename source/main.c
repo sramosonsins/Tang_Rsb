@@ -67,12 +67,12 @@ int main(int arg, const char *argv[])
     npops = atoi(argv[6]);
     popsize = (int *)calloc(npops,sizeof(int));
     for(i=0;i<npops;i++) {
-        popsize[i] = atoi(argv[7+1+i]);
+        popsize[i] = atoi(argv[7+i]);
     }
     pop_name = (char **)calloc(npops,sizeof(char *));
     for(i=0;i<npops;i++) {
         pop_name[i] = (char *)calloc(100,sizeof(char));
-        strcpy(pop_name[i], argv[7+1+npops+i]);
+        strcpy(pop_name[i], argv[7+npops+i]);
     }
 
     if (!(plink_file = fopen(file_in,"r"))) {
